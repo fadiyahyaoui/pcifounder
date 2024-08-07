@@ -20,16 +20,18 @@ app.post(`/bot${token}`, (req, res) => {
   res.sendStatus(200);
 });
 
-// Set webhook
-const setWebhook = async () => {
-  const url = `https://pcifounder.vercel.app/bot${token}`;
-  try {
-    await bot.setWebHook(url);
-    console.log(`Webhook set to ${url}`);
-  } catch (error) {
-    console.error('Error setting webhook:', error);
-  }
-};
+// Remove existing webhook
+await bot.deleteWebHook();
+console.log('Existing webhook removed');
+
+// Set new webhook
+const url = `https://pcifounder.vercel.app/bot${token}`;
+try {
+  await bot.setWebHook(url);
+  console.log(`Webhook set to ${url}`);
+} catch (error) {
+  console.error('Error setting webhook:', error);
+}
 
 setWebhook();
 
