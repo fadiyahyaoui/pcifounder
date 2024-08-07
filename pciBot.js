@@ -7,12 +7,31 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token);
 
 const app = express();
 const port = process.env.PORT || 2000;
 
 app.use(bodyParser.json());
+
+// Webhook route
+app.post(`/bot${token}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
+// Set webhook
+const setWebhook = async () => {
+  const url = `https://pcifounder.vercel.app/bot${token}`;
+  try {
+    await bot.setWebHook(url);
+    console.log(`Webhook set to ${url}`);
+  } catch (error) {
+    console.error('Error setting webhook:', error);
+  }
+};
+
+setWebhook();
 
 const waitForCoordinates = {};
 
