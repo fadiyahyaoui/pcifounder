@@ -1,7 +1,4 @@
 const TelegramBot = require('node-telegram-bot-api');
-const fs = require('fs');
-const parseString = require('xml2js').parseString;
-const geolib = require('geolib');
 const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
@@ -20,20 +17,22 @@ app.post(`/bot${token}`, (req, res) => {
   res.sendStatus(200);
 });
 
-// Remove existing webhook
-await bot.deleteWebHook();
-console.log('Existing webhook removed');
-
-// Set new webhook
-const url = `https://pcifounder.vercel.app/bot${token}`;
-try {
-  await bot.setWebHook(url);
-  console.log(`Webhook set to ${url}`);
-} catch (error) {
-  console.error('Error setting webhook:', error);
-}
+const setWebhook = async () => {
+  const url = `https://pcifounder.vercel.app/bot${token}`;
+  try {
+    const result = await bot.setWebHook(url);
+    console.log('Webhook set result:', result);
+  } catch (error) {
+    console.error('Error setting webhook:', error);
+  }
+};
 
 setWebhook();
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
 
 const waitForCoordinates = {};
 
