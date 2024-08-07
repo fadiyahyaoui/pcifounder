@@ -1,6 +1,10 @@
-const TelegramBot = require('node-telegram-bot-api');
+// server.js
 const express = require('express');
+const TelegramBot = require('node-telegram-bot-api');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const parseString = require('xml2js').parseString;
+const geolib = require('geolib');
 require('dotenv').config();
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -13,10 +17,12 @@ app.use(bodyParser.json());
 
 // Webhook route
 app.post(`/bot${token}`, (req, res) => {
+  console.log('Received webhook request:', JSON.stringify(req.body, null, 2));
   bot.processUpdate(req.body);
   res.sendStatus(200);
 });
 
+// Set the webhook
 const setWebhook = async () => {
   const url = `https://pcifounder.vercel.app/bot${token}`;
   try {
@@ -27,13 +33,13 @@ const setWebhook = async () => {
   }
 };
 
-setWebhook();
-
+// Start server and set webhook
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+  setWebhook();
 });
 
-
+// Initialize waitForCoordinates and keyboard
 const waitForCoordinates = {};
 
 const keyboard = [
@@ -202,12 +208,6 @@ bot.on('text', (msg) => {
       log(`PCI name received from user ${chatId}: ${pciName}`);
     }
   }
-});
-
-// Start the Express server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  log(`Server started on port ${port}`);
 });
 
 // Log function
